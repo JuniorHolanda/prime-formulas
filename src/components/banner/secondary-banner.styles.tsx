@@ -43,7 +43,7 @@ export const SSecondaryBannerImage = styled.div`
   position: absolute;
   z-index: -1;
   inset: 0;
-  height: 60%;
+  height: 50%;
   bottom: 0;
   top: auto;
 
