@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DotLottie } from "@lottiefiles/dotlottie-react";
-import openingAnimation from "@/lotties/principal.json";
+import openingAnimation from "@/lotties/animation-prime-lottie.json";
 import { useOpeningScreenContext } from "./opening-screen-context";
 import { SOpeningAnimation, SOpeningScreen } from "./opening-screen.styles";
 
