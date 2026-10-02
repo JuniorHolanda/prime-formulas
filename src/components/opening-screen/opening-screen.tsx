@@ -20,7 +20,6 @@ const animationData = JSON.stringify(openingAnimation);
 
 type PlayerListeners = {
   player: DotLottie;
-  onLoop: () => void;
   onLoad: () => void;
   onLoadError: () => void;
 };
@@ -28,16 +27,36 @@ type PlayerListeners = {
 export default function OpeningScreen() {
   const { complete } = useOpeningScreenContext();
   const [pageLoaded, setPageLoaded] = useState(false);
-  const [minimumLoopsFinished, setMinimumLoopsFinished] = useState(false);
+  const [animationFinished, setAnimationFinished] = useState(false);
   const [visible, setVisible] = useState(true);
+  const pageLoadedRef = useRef(false);
   const playerListeners = useRef<PlayerListeners | null>(null);
-  const closing = pageLoaded && minimumLoopsFinished;
+  const finishTimeout = useRef<number | null>(null);
+  const closing = pageLoaded && animationFinished;
+
+  const finishAfterCurrentCycle = useCallback((player: DotLottie) => {
+    player.setLoop(false);
+
+    if (finishTimeout.current !== null) {
+      window.clearTimeout(finishTimeout.current);
+    }
+
+    const remainingFrames = Math.max(
+      player.totalFrames - player.currentFrame,
+      0,
+    );
+    const remainingDuration = (remainingFrames / openingAnimation.fr) * 1000;
+
+    finishTimeout.current = window.setTimeout(() => {
+      player.pause();
+      setAnimationFinished(true);
+    }, remainingDuration);
+  }, []);
 
   const handlePlayerRef = useCallback((player: DotLottie | null) => {
     const currentListeners = playerListeners.current;
 
     if (currentListeners) {
-      currentListeners.player.removeEventListener("loop", currentListeners.onLoop);
       currentListeners.player.removeEventListener("load", currentListeners.onLoad);
       currentListeners.player.removeEventListener(
         "loadError",
@@ -45,38 +64,38 @@ export default function OpeningScreen() {
       );
       playerListeners.current = null;
     }
+    if (finishTimeout.current !== null) {
+      window.clearTimeout(finishTimeout.current);
+      finishTimeout.current = null;
+    }
 
     if (!player) return;
 
-    let completedLoops = 0;
-
-    const onLoop = () => {
-      completedLoops += 1;
-
-      if (completedLoops >= 2) {
-        setMinimumLoopsFinished(true);
-      }
-    };
-
     const onLoad = () => {
-      completedLoops = 0;
       player.setFrame(0);
+      if (pageLoadedRef.current) player.setLoop(false);
       player.play();
+      if (pageLoadedRef.current) finishAfterCurrentCycle(player);
     };
 
-    const onLoadError = () => setMinimumLoopsFinished(true);
+    const onLoadError = () => setAnimationFinished(true);
 
-    player.addEventListener("loop", onLoop);
     player.addEventListener("load", onLoad);
     player.addEventListener("loadError", onLoadError);
 
-    playerListeners.current = { player, onLoop, onLoad, onLoadError };
+    playerListeners.current = { player, onLoad, onLoadError };
 
     if (player.isLoaded) onLoad();
-  }, []);
+  }, [finishAfterCurrentCycle]);
 
   useEffect(() => {
-    const markPageLoaded = () => setPageLoaded(true);
+    const markPageLoaded = () => {
+      pageLoadedRef.current = true;
+      setPageLoaded(true);
+      const player = playerListeners.current?.player;
+
+      if (player?.isLoaded) finishAfterCurrentCycle(player);
+    };
     const previousOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
@@ -90,25 +109,8 @@ export default function OpeningScreen() {
     return () => {
       window.removeEventListener("load", markPageLoaded);
       document.body.style.overflow = previousOverflow;
-
-      const currentListeners = playerListeners.current;
-
-      if (currentListeners) {
-        currentListeners.player.removeEventListener(
-          "loop",
-          currentListeners.onLoop,
-        );
-        currentListeners.player.removeEventListener(
-          "load",
-          currentListeners.onLoad,
-        );
-        currentListeners.player.removeEventListener(
-          "loadError",
-          currentListeners.onLoadError,
-        );
-      }
     };
-  }, []);
+  }, [finishAfterCurrentCycle]);
 
   useEffect(() => {
     if (!closing) return;
