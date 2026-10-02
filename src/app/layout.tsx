@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Nunito, Roboto } from "next/font/google";
+import OpeningScreen from "@/components/opening-screen/opening-screen";
+import { OpeningScreenProvider } from "@/components/opening-screen/opening-screen-context";
+import StyleProvider from "@/providers/style-provider";
+import SGlobalStyles from "@/styles/global-styles";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const nunito = Nunito({
+  variable: "--font-primary",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
+  variable: "--font-secondary",
   subsets: ["latin"],
 });
 
@@ -19,8 +23,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="pt-Br" className={`${nunito.variable} ${roboto.variable}`}>
+      <body>
+        <StyleProvider>
+          <SGlobalStyles />
+          <OpeningScreenProvider>
+            <OpeningScreen />
+            {children}
+          </OpeningScreenProvider>
+        </StyleProvider>
+      </body>
     </html>
   );
 }

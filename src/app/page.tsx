@@ -1,69 +1,79 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Banner from "@/components/banner/banner";
+import Reveal from "@/components/animation/reveal";
+import Footer from "@/components/footer/footer";
+import SecondaryBanner from "@/components/banner/secondary-banner";
+import BenefitsSlider from "./benefits-slider";
+import { SHeader, SHeaderLogo, SMain, SPage } from "./page.styles";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <SPage>
+      <Reveal>
+        <SHeader>
+          <SHeaderLogo
+            src="/logo-prime-formulas.svg"
+            alt="Magistral Prime Fórmulas"
+            width={320}
+            height={120}
+          />
+        </SHeader>
+      </Reveal>
+
+      <SMain>
+        <Reveal afterOpening>
+          <Banner
+            imageSrc="/cachorro.png"
+            imageAlt="Cachorro recebendo medicamento com uma seringa"
+            href="https://api.whatsapp.com/send?phone=5511963167575&text=Ol%C3%A1%20gostaria%20de%20enviar%20uma%20receita%20veterin%C3%A1ria"
+            title={
+              <>
+                Manipulação
+                <br />
+                de medicamentos
+                <br />
+                veterinários
+              </>
+            }
+            description={
+              <>
+                <span className="tablet-copy">
+                  Medicamentos na medida
+                  <br />
+                  certa para seu melhor amigo
+                </span>
+                <span className="desktop-copy">
+                  Medicamentos na medida certa para
+                  <br />
+                  seu melhor amigo
+                </span>
+              </>
+            }
+            linkText="Consultar opções"
+            preload
+          />
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <BenefitsSlider />
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <SecondaryBanner
+            imageSrc="/gato.png"
+            imageAlt="Gato recebendo medicamento com uma seringa"
+            href="https://api.whatsapp.com/send?phone=5511933954537&text=Ol%C3%A1%20quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20parceria%20para%20veterin%C3%A1rios."
+            title="Oferecemos parcerias com veterinários e clínicas"
+            description="Veterinário, seja um parceiro Prime!"
+            secondaryDescription="Marque uma visita com um de nossos consultores farmacêuticos e fique por dentro das novidades em fórmulas manipuladas para uso veterinário."
+            linkText="Agendar visita"
+            preload
+          />
+        </Reveal>
+      </SMain>
+
+      <Reveal>
+        <Footer />
+      </Reveal>
+    </SPage>
   );
 }
